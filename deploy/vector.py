@@ -139,7 +139,7 @@ class VectorChromaDB:
         _results = list()
         index = 1
         for doc, meta in zip(results["documents"][0], results["distances"][0]):
-            _results.append({"text": doc, "value": meta, "top": index})
+            _results.append({"txt": doc, "value": meta, "top": index})
             index += 1
         return _results
 

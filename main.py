@@ -16,6 +16,13 @@ base_info:
 
 usage:
 
+1、response_mode的选项，控制如何将检索到的文档整合到最终响应中：
+    "compact" （默认）: 将检索到的文档合并后一次性生成响应。
+    "refine" : 迭代优化答案（先对第一个文档生成响应，再用后续文档修正）。
+    "tree_summarize" : 用树状结构汇总文档（适合长文本）。
+    "no_text" : 仅返回检索到的文档节点，不生成回答。
+    "accumulate" : 分别对每个文档生成回答后拼接。
+
 design:
 
 reference urls:
@@ -36,7 +43,7 @@ Life is short, I use python.
 from deploy.utils import get_model_ai, get_model_embedding, get_vector_abs_path
 from deploy.config import VECTOR_COLLECTION_NAME, TOP, CHUNK_SIZE, CHUNK_OVERLAP
 from deploy.vector import VectorChromaDB
-from deploy.ai import RAGHuggingFaceAI
+from deploy.ai import RAGHuggingFaceAI, RAGOllamaAI
 
 from llama_index.core import VectorStoreIndex, StorageContext
 from llama_index.vector_stores.chroma import ChromaVectorStore
@@ -62,10 +69,10 @@ embed_model = HuggingFaceEmbedding(model_name=MODEL_EMBEDDING)
 # ------------------------------
 # Llama-Index Core全局配置
 # ------------------------------
-Settings.llm = llm  # LLM
-Settings.embed_model = embed_model  # Embedding模型
-Settings.chunk_size = CHUNK_SIZE  # chunk_size
-Settings.chunk_overlap =  CHUNK_OVERLAP  # chunk_overlap
+Settings.llm = llm
+Settings.embed_model = embed_model
+Settings.chunk_size = CHUNK_SIZE
+Settings.chunk_overlap = CHUNK_OVERLAP
 
 # ------------------------------
 # 加载持久化的ChromaDB索引
@@ -79,15 +86,19 @@ storage_context = StorageContext.from_defaults(vector_store=vector_store)
 # ------------------------------
 index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
 query_engine = index.as_query_engine(
-    similarity_top_k=TOP,         # 返回最相似的3个结果
-    response_mode="tree_summarize",    # 优化生成结果：tree_summarize compact
+    similarity_top_k=TOP,               # 相似结果数量
+    response_mode="tree_summarize",     # 响应模式，详情见usage
+    streaming=False,                    # 流式输出
+    verbose=False,                      # 详细输出
 )
 
 # ------------------------------
-# 提问测试
+# 测试
 # ------------------------------
-question = "节日假期都什么？"
+question = "wget命令可以做什么？"
 response = query_engine.query(question)
+result = str(response).split('---------------------')
 print(f"问题: {question}")
-print(f"回答: {response}")
+print(f"回答: {result}")
 print('----------------------end')
+print(f"Response回答: {response.response}")

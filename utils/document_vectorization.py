@@ -44,12 +44,15 @@ from deploy.utils import get_vector_abs_path
 def split_document_to_vector_db(db: VectorChromaDB, splitter: Splitter):
     for document in DOCUMENT_LIST:
         if not document: continue
-        # print(document)
-        # print(document.endswith(".pdf"))
-        # if (not document.endswith(".pdf")
-        #         or not document.endswith(".txt")):
-        #     print(f"{document}文件类型不支持，退出。。。。。。")
-        #     os._exit(0)
+        if not os.path.exists(document):
+            print(f"{document}目录不存在，退出。。。。。。")
+            os._exit(0)
+
+        if (os.path.isfile(document)
+                and (not document.endswith(".pdf") or not document.endswith(".txt") or not document.endswith(".md"))
+        ):
+            print(f"{document}文件类型不支持，退出。。。。。。")
+            os._exit(0)
 
         splitter_documents = splitter.load_document(document)
         chunks = splitter.split_text(documents=splitter_documents)
@@ -57,7 +60,7 @@ def split_document_to_vector_db(db: VectorChromaDB, splitter: Splitter):
         vector_metadatas = list()
         for chunk in chunks:
             if not chunk: continue
-            vector_documents.append(chunk["text"])
+            vector_documents.append(chunk["txt"])
             vector_metadatas.append(chunk["metadata"])
         db.add(documents=vector_documents, metadatas=vector_metadatas)
         print(f"{document}->加入向量数据库成功")

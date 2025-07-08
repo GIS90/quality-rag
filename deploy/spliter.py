@@ -47,7 +47,8 @@ Life is short, I use python.
 import os
 from typing import List, Dict
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import PyPDFLoader, TextLoader
+from langchain_community.document_loaders import (PyPDFLoader, TextLoader, UnstructuredMarkdownLoader,
+                                                  DirectoryLoader)
 from langchain_huggingface import HuggingFaceEmbeddings
 
 # 模型配置
@@ -78,18 +79,30 @@ class Splitter:
     def load_document(self, file_path: str):
         """
         加载文档内容
-        :param file_path: 文件路径（支持PDF/TXT）
+        :param file_path:
+            - 文件路径（支持PDF/TXT/MD）
+            - 文件目录
         :return: 文档内容列表
         """
         if not os.path.exists(file_path):
             return FileNotFoundError(f"文件 {file_path} 不存在")
 
-        if file_path.endswith('.pdf'):
-            loader = PyPDFLoader(file_path)
-        elif file_path.endswith('.txt'):
-            loader = TextLoader(file_path, encoding='utf-8')
+        if os.path.isdir(file_path):
+            loader = DirectoryLoader(
+                file_path,
+                glob=["**/*.md", "**/*.txt", "**/*.pdf"],
+                show_progress=True,  # 显示加载进度
+                use_multithreading=True,  # 多线程加载
+            )
         else:
-            return NotImplementedError("仅支持PDF和TXT格式")
+            if file_path.endswith('.pdf'):
+                loader = PyPDFLoader(file_path)
+            elif file_path.endswith('.txt'):
+                loader = TextLoader(file_path, encoding='utf-8')
+            elif file_path.endswith('.md'):
+                loader = UnstructuredMarkdownLoader(file_path)
+            else:
+                return NotImplementedError("仅支持PDF和TXT格式")
 
         content = list()
         for page in loader.load():
@@ -113,7 +126,7 @@ class Splitter:
             )
             for split in splits:
                 chunks.append({
-                    "text": split.page_content,
+                    "txt": split.page_content,
                     "metadata": split.metadata,
                     "length": len(split.page_content)
                 })
@@ -129,7 +142,7 @@ class Splitter:
         print("\n示例文本块：")
         for i in [0, len(chunks) // 2, -1]:  # 显示首、中、尾三个样本
             print("-" * 50)
-            print(f"[块 {i + 1}] {chunks[i]['text'][:100]}...")
+            print(f"[块 {i + 1}] {chunks[i]['txt'][:100]}...")
             print(f"来源: 第 {chunks[i]['metadata'].get('page', '?') + 1} 页")
 
 

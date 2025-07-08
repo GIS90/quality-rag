@@ -33,7 +33,7 @@ Life is short, I use python.
 """
 
 # ------------------------------------------------------------
-# usage: /usr/bin/python modelscope_downloader_.py
+# usage: /usr/bin/python downloader_modelscope.py
 # ------------------------------------------------------------
 import os
 from modelscope.hub.snapshot_download import snapshot_download

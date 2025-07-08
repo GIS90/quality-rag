@@ -32,7 +32,7 @@ Life is short, I use python.
 import os.path
 
 # ------------------------------------------------------------
-# usage: /usr/bin/python hug_downloader.py
+# usage: /usr/bin/python downloader_huggingface.py
 # ------------------------------------------------------------
 import os
 from huggingface_hub import snapshot_download

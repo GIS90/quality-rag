@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 
 # 加载.env环境变量
-load_dotenv(dotenv_path='../.env')
+load_dotenv()
 
 
 # RAG配置

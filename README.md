@@ -1,6 +1,6 @@
 # Quality-Rag
 
-基于Python语言，结合Langchain、第三方AI接口搭建开发的RAG简单问答系统，用***uv***命令管理运行环境。
+基于Python语言，结合Langchain、第三方AI接口搭建开发的RAG简单问答系统，用***uv***命令管理运行环境，加入了streamlit生成简单的rag页面。
 
 ## 架构
 - 开发语言：Python语言

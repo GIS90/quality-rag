@@ -60,7 +60,7 @@ ai = RAGDeepseekAI()
 # ------------------------------
 st.title("📖 质量大Q智能问答RAG系统")
 st.markdown("基于检索增强生成（RAG）的问答工具，无需上传文件，直接提问即可！")
-st.text("请输入你的问题：")
+st.text("请输入你的问题（回车/提交）：")
 col1, col2 = st.columns([4, 1])  # 第一列宽度占4/5，第二列占1/5
 with col1:
     question = st.text_input(
@@ -71,7 +71,7 @@ with col1:
 with col2:
     submit_button = st.button("提交")
 
-if question and submit_button:
+if question or (question and submit_button):
     print('>'*55 + 'start')
     contents = vector.query(query_texts=question, top=TOP)
     line_contents = "文档检索内容：\n"

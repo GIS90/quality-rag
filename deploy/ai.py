@@ -117,6 +117,7 @@ from deploy.utils import get_model_ai
 from deploy.config import (OLLAMA_MODEL_ID, OLLAMA_URL,
                            DS_MODEL_ID, DS_BASE_URL, DS_API_KEY)
 
+
 __all__ = [
     "RAGHuggingFaceAI",
     "RAGOllamaAI",
@@ -237,6 +238,7 @@ class RAGDeepseekAI:
         }
         headers |= self.__HEADERS
         response = requests.request("POST", url, headers=headers, data=payload)
-        return response.json()["choices"][0]["message"]["content"]
-
-
+        if response.status_code == 200:
+            return response.json()["choices"][0]["message"]["content"] 
+        else:
+            return "未找到相关信息。"

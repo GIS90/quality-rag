@@ -16,6 +16,7 @@ dependencies = [
     "llama-index-llms-ollama>=0.6.2",
     "llama-index-vector-stores-chroma>=0.4.2",
     "modelscope>=1.27.1",
+    "streamlit>=1.46.1",
     "torch>=2.7.1",
     "unstructured[md,pdf]>=0.18.3",
 ]

@@ -1,3 +1,11 @@
+import os
+from dotenv import load_dotenv
+
+
+# 加载.env环境变量
+load_dotenv(dotenv_path='../.env')
+
+
 # RAG配置
 TOP = 3
 CHUNK_SIZE = 200
@@ -16,7 +24,7 @@ DOCUMENT_LIST = [
 
 # Modelscope账户
 MS_USER_NAME = 'Pygo222'
-MS_ACCESS_TOKEN = '4c35372c-ed7b-4fb7-bc8d-74b7bf26b6cb'
+MS_ACCESS_TOKEN = os.getenv("MS_ACCESS_TOKEN")
 
 # > > > > > > > > > > > > > > > > > > > > > > > > > > > > > >
 # 本地模型配置
@@ -29,7 +37,7 @@ OLLAMA_URL = "http://localhost:11434"
 OLLAMA_MODEL_ID = "qwen3:8b"
 
 # API模型配置 deepseek
-DS_API_KEY = ""
+DS_API_KEY = os.getenv("DS_API_KEY")
 DS_BASE_URL = "https://api.deepseek.com"
 DS_MODEL_ID = "deepseek-chat"
 # < < < < < < < < < < < < < < < < < < < < < < < < < < < < < <

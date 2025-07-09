@@ -41,7 +41,7 @@ from deploy.config import VECTOR_DB_PATH, MODEL_EMBEDDING, MODEL_AI, MODEL_CACHE
 
 def get_root_path() -> str:
     """
-    获取项目根目录
+    项目根目录
     :return: abs path
     """
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -49,10 +49,18 @@ def get_root_path() -> str:
 
 def get_vector_abs_path() -> str:
     """
-    获取向量数据库的绝对路径
+    向量数据库的绝对路径
     :return: abs path
     """
     return os.path.join(get_root_path(), VECTOR_DB_PATH)
+
+
+def get_dotenv() -> str:
+    """
+    .env文件
+    :return:
+    """
+    return os.path.join(get_root_path(), '.env')
 
 
 def hashlib_md5(content: str, length: int =8):
@@ -77,3 +85,4 @@ def get_model_ai() -> str:
     :return:
     """
     return f"{MODEL_CACHE_DIR}/{MODEL_AI}"
+

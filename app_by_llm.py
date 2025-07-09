@@ -4,7 +4,7 @@
 ------------------------------------------------
 
 describe: 
-    main
+    app run by llm
 
 base_info:
     __author__ = "PyGo"
@@ -22,6 +22,12 @@ usage:
     "tree_summarize" : 用树状结构汇总文档（适合长文本）。
     "no_text" : 仅返回检索到的文档节点，不生成回答。
     "accumulate" : 分别对每个文档生成回答后拼接。
+
+2、Llama-index response对象
+print(f"response.response: {response.response}")    # str	生成的答案文本（最常用）
+print(f"response.source_nodes: {response.source_nodes}")    # List[NodeWithScore]	检索到的源节点，包含文档片段和相似度得分
+print(f"response.metadata: {response.metadata}")    # dict	元数据（如模型名称、检索参数等）
+print(f"response.get_formatted_sources(): {response.get_formatted_sources()}")    # str	格式化后的参考来源（包含文本和出处）
 
 design:
 

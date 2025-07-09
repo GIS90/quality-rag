@@ -130,6 +130,6 @@ if question and submit_button:
     for i, doc in response.metadata.items():
         v_documents.append(doc.get("source"))
         if doc.get("source") not in v_documents:
-            st.markdown(doc.get("source"))
+            st.text(doc.get("source"))
 
 

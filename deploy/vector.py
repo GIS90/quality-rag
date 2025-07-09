@@ -137,9 +137,9 @@ class VectorChromaDB:
                 include=["documents", "metadatas", "distances"]
             )
         _results = list()
+        print(results)
         index = 1
         for doc, meta in zip(results["documents"][0], results["distances"][0]):
             _results.append({"txt": doc, "value": meta, "top": index})
             index += 1
         return _results
-

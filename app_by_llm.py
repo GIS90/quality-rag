@@ -50,6 +50,7 @@ from llama_index.vector_stores.chroma import ChromaVectorStore
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.core import Settings
 import streamlit as st
+import os
 
 
 # 模型配置
@@ -128,8 +129,8 @@ if question and submit_button:
     st.subheader("参考内容：")
     v_documents = []
     for i, doc in response.metadata.items():
-        v_documents.append(doc.get("source"))
         if doc.get("source") not in v_documents:
-            st.text(doc.get("source"))
+            v_documents.append(doc.get("source"))
+            st.text(os.path.basename(doc.get("source")))
 
 

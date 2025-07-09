@@ -74,6 +74,22 @@ tfs_z	        float	None	Tail-free 采样参数（减少低概率 token 的影�
 mirostat	    int	    None	启用 Mirostat 采样（1 或 2）。
 -----------------------------------------------------------------------------------------------------------------------
 
+Deepseek:
+    def test():
+        print("* " * 22+"start")
+        ai = RAGDeepseekAI()
+        # 模型列表
+        print(ai.get_model_list())
+        # 用户余额
+        print(ai.get_user_balance())
+
+        # 对话
+        print(ai.chat(content="介绍下自己"))
+        print("* " * 22 + "end")
+
+    test()
+
+
 design:
 
 reference urls:
@@ -91,28 +107,32 @@ Life is short, I use python.
 # ------------------------------------------------------------
 # usage: /usr/bin/python ai.py
 # ------------------------------------------------------------
+import json
+import requests
 from llama_index.llms.huggingface import HuggingFaceLLM
 from llama_index.llms.ollama import Ollama
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from deploy.utils import get_model_ai
-from deploy.config import OLLAMA_MODEL_ID, OLLAMA_URL
-
+from deploy.config import (OLLAMA_MODEL_ID, OLLAMA_URL,
+                           DS_MODEL_ID, DS_BASE_URL, DS_API_KEY)
 
 __all__ = [
     "RAGHuggingFaceAI",
     "RAGOllamaAI",
+    "RAGDeepseekAI",
 ]
-
 
 MODEL_AI = get_model_ai()
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_AI)
 model = AutoModelForCausalLM.from_pretrained(MODEL_AI)
 
-system_prompt = """你是一个RAG系统助手，严格根据提供的检索内容回答问题。
+system_prompt = """你是一个RAG系统助手，专门帮助用户基于给定的上下文内容回答问题，严格根据提供的检索内容回答问题。
 - 仅使用检索到的信息生成回答，禁止编造未知内容。
 - 如果检索结果不包含答案，回复：“未找到相关信息。
+- 回答应简洁明了，不添加额外解释或发挥。
+- 请严格按照用户的指示进行判断和回答，不得使用自己的知识库或常识来回答问题。
 """
 
 
@@ -120,6 +140,7 @@ class RAGHuggingFaceAI:
     """
     RAG HuggingFace AI
     """
+
     def __init__(self):
         self.llm = HuggingFaceLLM(
             model=model,
@@ -136,6 +157,7 @@ class RAGOllamaAI:
     """
     RAG Ollama AI
     """
+
     def __init__(self):
         self.llm = Ollama(
             model=OLLAMA_MODEL_ID,
@@ -144,3 +166,77 @@ class RAGOllamaAI:
             top_p=0.9,
             request_timeout=60.0,
         )
+
+
+class RAGDeepseekAI:
+    """
+    RAG Deepseek AI
+    """
+
+    def __init__(self):
+        """
+        初始化，配置相关API_KEY、Model、URL
+        """
+        self.key = DS_API_KEY
+        self.model = DS_MODEL_ID
+        self.base_url = DS_BASE_URL
+        self.__HEADERS = {
+            "Accept": "application/json",
+            "Authorization": "Bearer %s" % DS_API_KEY
+        }
+
+    def get_model_list(self) -> list:
+        """
+        模型列表
+        """
+        url = f"{self.base_url}/models"
+        payload = {}
+        headers = {"api": "/models"}
+        headers |= self.__HEADERS
+        response = requests.request("GET", url, headers=headers, data=payload)
+        return response.json().get("data")
+
+    def get_user_balance(self) -> dict:
+        """
+        用户余额
+        """
+        url = f"{self.base_url}/user/balance"
+        payload = {}
+        headers = {"api": "/user/balance"}
+        headers |= self.__HEADERS
+        response = requests.request("GET", url, headers=headers, data=payload)
+        return response.json()
+
+    def chat(self, content: str) -> str:
+        url = f"{self.base_url}/chat/completions"
+        payload = json.dumps({
+          "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": content}
+          ],
+          "model": self.model,
+          "frequency_penalty": 0,
+          "max_tokens": 2048,
+          "presence_penalty": 0,
+          "response_format": {
+            "type": "text"
+          },
+          "stop": None,
+          "stream": False,
+          "stream_options": None,
+          "temperature": 0.1,
+          "top_p": 1,
+          "tools": None,
+          "tool_choice": "none",
+          "logprobs": False,
+          "top_logprobs": None
+        })
+        headers = {
+          "api": "/chat/completions",
+          'Content-Type': 'application/json',
+        }
+        headers |= self.__HEADERS
+        response = requests.request("POST", url, headers=headers, data=payload)
+        return response.json()["choices"][0]["message"]["content"]
+
+

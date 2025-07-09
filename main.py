@@ -43,7 +43,7 @@ Life is short, I use python.
 from deploy.utils import get_model_ai, get_model_embedding, get_vector_abs_path
 from deploy.config import VECTOR_COLLECTION_NAME, TOP, CHUNK_SIZE, CHUNK_OVERLAP
 from deploy.vector import VectorChromaDB
-from deploy.ai import RAGHuggingFaceAI, RAGOllamaAI
+from deploy.ai import RAGHuggingFaceAI, RAGOllamaAI, RAGDeepseekAI
 
 from llama_index.core import VectorStoreIndex, StorageContext
 from llama_index.vector_stores.chroma import ChromaVectorStore

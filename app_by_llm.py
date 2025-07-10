@@ -55,6 +55,7 @@ from llama_index.core import VectorStoreIndex, StorageContext
 from llama_index.vector_stores.chroma import ChromaVectorStore
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.core import Settings
+from datetime import datetime
 import streamlit as st
 import os
 
@@ -117,6 +118,7 @@ with col2:
     submit_button = st.button("提交")
 
 if question and submit_button:
+    _start = datetime.now()
     print('>'*55 + 'start')
     response = query_engine.query(question)
     print(f"问题: {question}")
@@ -138,5 +140,7 @@ if question and submit_button:
         if doc.get("source") not in v_documents:
             v_documents.append(doc.get("source"))
             st.text(os.path.basename(doc.get("source")))
-
+    # 显示查询时间
+    _end = datetime.now()
+    st.subheader(f"耗费时间（单位：s）：{(_end - _start).seconds}")
 

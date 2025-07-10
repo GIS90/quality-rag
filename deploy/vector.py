@@ -74,7 +74,12 @@ class VectorChromaDB:
 
         self.collection_name = collection_name
         if not collection_meta:
-            collection_meta = {"description": collection_name}
+            collection_meta = {}
+        __default_collection_meta = {
+            "description": collection_name,
+            "hnsw:space": "cosine"  # 使用HNSW索引
+        }
+        collection_meta |= __default_collection_meta
 
         self.client = chromadb.PersistentClient(
             path=db_path,
